@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 1200px;
+            height: 500px;
+            border: 2px solid #ccc;
+            margin: 50px auto;
+            overflow: hidden;
+        }
+
+        .draggable {
+            position: absolute;
+            cursor: move;
+            max-width: 100%;
+            min-width: 200px; /* Set minimum width */
+            min-height: 200px; /* Set minimum height */
+            z-index: 1;
+        }
+    </style>
+    <script src="https://unpkg.com/interactjs@1.10.11/dist/interact.min.js"></script>
+</head>
+<body>
+
+<div id="container">
+    <img src="img-test.jpeg" class="draggable" id="image1" draggable="true">
+    <img src="img-test.jpeg" class="draggable" id="image2" draggable="true">
+    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
+    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
+    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
+</div>
+
+<script>
+    let zIndexCounter = 1;
+
+    interact('.draggable')
+        .draggable({
+            onstart: function (event) {
+                zIndexCounter++;
+                event.target.style.zIndex = zIndexCounter;
+            },
+            modifiers: [
+                interact.modifiers.restrictRect({
+                    restriction: 'parent'
+                })
+            ]
+        })
+        .resizable({
+            edges: { left: true, right: true, bottom: true, top: true },
+            modifiers: [
+                interact.modifiers.restrictSize({
+                    min: { width: 100, height: 100 } // Set minimum size
+                })
+            ]
+        })
+        .on('resizemove', function (event) {
+            const target = event.target;
+            target.style.width = event.rect.width + 'px';
+            target.style.height = event.rect.height + 'px';
+            target.style.zIndex = zIndexCounter++;
+        })
+        .on('dragmove', function (event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+            target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        })
+        .gesturable({
+            onmove: function (event) {
+                const target = event.target;
+                const scale = (parseFloat(target.getAttribute('data-scale')) || 1) * event.scale;
+                const rotation = event.rotation;
+
+                target.style.transform = 'translate(' + event.target.x + 'px, ' + event.target.y + 'px) scale(' + scale + ') rotate(' + rotation + 'deg)';
+                target.setAttribute('data-scale', scale);
+            }
+        })
+        .on('click', function (event) {
+            const target = event.target;
+            zIndexCounter++;
+            target.style.zIndex = zIndexCounter;
+        });
+</script>
+
+</body>
+</html>
