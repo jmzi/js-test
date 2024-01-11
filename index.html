@@ -4,47 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test</title>
+    <body>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
 
         #container {
             position: relative;
             width: 1200px;
             height: 500px;
-            border: 2px solid #ccc;
+            
             margin: 50px auto;
             overflow: hidden;
         }
 
         .draggable {
             position: absolute;
-            cursor: move;
+            
             max-width: 100%;
             min-width: 200px; /* Set minimum width */
             min-height: 200px; /* Set minimum height */
             z-index: 1;
+          
+            cursor: move;
         }
+        
+        #container img:nth-of-type(1) {
+            right:15%;
+        }
+        #container img:nth-of-type(2) {
+            right: 15%;
+            bottom: 2%;
+        }
+        #container img:nth-of-type(3) {
+                left: 8%;
+            bottom: 18%;
+        }
+        #container img:nth-of-type(4) {
+            right: 44%;
+            bottom: 43%;
+        }
+        #container img:nth-of-type(5) {
+            right: 35%;
+            bottom: 19%;
+        }
+        
+         #container img:nth-of-type(6) {
+            right: 55%;
+            bottom: 30%;
+        }
+        #container img:nth-of-type(7) {
+            right: 20%;
+            bottom: 34%;
+        }
+        
+        #container img:nth-of-type(8) {
+            right: 74%;
+            bottom: 38%;
+        }
+        
+        #container img:nth-of-type(9) {
+            right: 0%;
+            bottom: 17%;
+        }
+        
+        #container img:nth-of-type(10) {
+            right: 51%;
+            bottom: 7%;
+        }    
     </style>
     <script src="https://unpkg.com/interactjs@1.10.11/dist/interact.min.js"></script>
-</head>
-<body>
-<h1 align="center">Interactive Images</h1>
-<div id="container">
-    <img src="img-test.jpeg" class="draggable" id="image1" draggable="true">
-    <img src="img-test.jpeg" class="draggable" id="image2" draggable="true">
-    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
-    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
-    <img src="img-test.jpeg" class="draggable" id="image3" draggable="true">
-</div>
+    <br><br>
+    <h1 align="center">Image Gallery</h1>
+    <div id="container">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/1111.png" class="draggable" id="image1" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/2222.jpg" class="draggable" id="image2" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/3333.jpg" class="draggable" id="image3" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/1000.jpg " class="draggable" id="image4" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/5555.jpg" class="draggable" id="image5" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/6666.jpg" class="draggable" id="image6" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/7777.jpg" class="draggable" id="image7" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/8888.jpg" class="draggable" id="image8" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/9999.jpg" class="draggable" id="image9" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/4444.jpg" class="draggable" id="image10" draggable="true">
+    </div>
 
-<script>
+    <script>
     let zIndexCounter = 1;
 
-    interact('.draggable')
+function initializeInteract(target) {
+    let initialDrag = { x: 0, y: 0 };
+    let currentRotation = 0;
+
+    interact(target)
         .draggable({
             onstart: function (event) {
                 zIndexCounter++;
@@ -54,47 +104,71 @@
                 interact.modifiers.restrictRect({
                     restriction: 'parent'
                 })
-            ]
+            ],
+            onmove: function (event) {
+                const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                target.style.transform = `translate(${x}px, ${y}px) rotate(${currentRotation}deg)`;
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+
+                initialDrag = { x, y };
+            }
+        })
+        .on('resizemove', function (event) {
+            const aspectRatio = target.offsetWidth / target.offsetHeight;
+            const newHeight = event.rect.width / aspectRatio;
+
+            target.style.width = event.rect.width + 'px';
+            target.style.height = newHeight + 'px';
+            target.style.zIndex = zIndexCounter++;
+        })
+        .on('click', function (event) {
+            zIndexCounter++;
+            target.style.zIndex = zIndexCounter;
         })
         .resizable({
             edges: { left: true, right: true, bottom: true, top: true },
-            modifiers: [
-                interact.modifiers.restrictSize({
-                    min: { width: 100, height: 100 } // Set minimum size
-                })
-            ]
-        })
-        .on('resizemove', function (event) {
-            const target = event.target;
-            target.style.width = event.rect.width + 'px';
-            target.style.height = event.rect.height + 'px';
-            target.style.zIndex = zIndexCounter++;
-        })
-        .on('dragmove', function (event) {
-            const target = event.target;
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            onstart: function (event) {
+                const rect = target.getBoundingClientRect();
 
-            target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        })
-        .gesturable({
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const angleRad = Math.atan2(y - rect.height / 2, x - rect.width / 2);
+                initialAngle = angleRad * (180 / Math.PI);
+
+                // Change cursor style when resizing
+                document.body.style.cursor = 'nesw-resize';
+            },
             onmove: function (event) {
-                const target = event.target;
-                const scale = (parseFloat(target.getAttribute('data-scale')) || 1) * event.scale;
-                const rotation = event.rotation;
+                const rect = target.getBoundingClientRect();
 
-                target.style.transform = 'translate(' + event.target.x + 'px, ' + event.target.y + 'px) scale(' + scale + ') rotate(' + rotation + 'deg)';
-                target.setAttribute('data-scale', scale);
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const angleRad = Math.atan2(y - rect.height / 2, x - rect.width / 2);
+                const angleDeg = angleRad * (180 / Math.PI);
+
+                const rotation = angleDeg - initialAngle;
+
+                target.style.transform = `translate(${initialDrag.x}px, ${initialDrag.y}px) rotate(${rotation}deg)`;
+                currentRotation = rotation;
+            },
+            onend: function () {
+                // Reset cursor style after resizing
+                document.body.style.cursor = 'auto';
             }
-        })
-        .on('click', function (event) {
-            const target = event.target;
-            zIndexCounter++;
-            target.style.zIndex = zIndexCounter;
         });
-</script>
+}
+
+// Initialize interact for each draggable element
+document.querySelectorAll('.draggable').forEach(initializeInteract);
+        
+        
+    </script>
+    
 
 </body>
 </html>
