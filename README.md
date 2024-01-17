@@ -1,1 +1,0 @@
-# gallery-mobile-version
