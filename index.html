@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Interactive Image Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .draggable {
+            position: absolute;
+            max-width: 100%;
+            min-width: 200px;
+            min-height: 200px;
+            z-index: 1;
+            cursor: move;
+        }
+
+        /* Adjust positions for mobile */
+        #container img {
+            transform-origin: center bottom;
+            transform: scale(0.7);
+        }
+    </style>
+    <script src="https://unpkg.com/interactjs@1.10.11/dist/interact.min.js"></script>
+</head>
+<body>
+    <h1 align="center">Image Gallery</h1>
+    <div id="container">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/1111.png" class="draggable" id="image1" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/2222.jpg" class="draggable" id="image2" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/3333.jpg" class="draggable" id="image3" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/1000.jpg" class="draggable" id="image4" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/5555.jpg" class="draggable" id="image5" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/6666.jpg" class="draggable" id="image6" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/7777.jpg" class="draggable" id="image7" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/8888.jpg" class="draggable" id="image8" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/9999.jpg" class="draggable" id="image9" draggable="true">
+        <img decoding="async" src="https://jwebdesignerph.com/studipal/wp-content/uploads/2024/01/4444.jpg" class="draggable" id="image10" draggable="true">
+    </div>
+
+    <script>
+        let zIndexCounter = 1;
+
+        function initializeInteract(target) {
+            interact(target)
+                .draggable({
+                    onstart: function (event) {
+                        zIndexCounter++;
+                        event.target.style.zIndex = zIndexCounter;
+                    },
+                    modifiers: [
+                        interact.modifiers.restrictRect({
+                            restriction: 'parent'
+                        })
+                    ],
+                    onmove: function (event) {
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    }
+                });
+        }
+
+        // Initialize interact for each draggable element
+        document.querySelectorAll('.draggable').forEach(initializeInteract);
+    </script>
+</body>
+</html>
